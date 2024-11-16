@@ -1,16 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Homework 10</title>
-  </head>
-  <body>
-    <select class="breed-select"></select>
-    <p class="loader">Loading data, please wait...</p>
-    <p class="error">Oops! Something went wrong! Try reloading the page!</p>
-    <div class="cat-info"></div>
-
-    <script src="index.js" type="module"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cat Finder</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://cdn.jsdelivr.net/npm/slim-select@1.27.0/dist/slimselect.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1>Cat Finder</h1>
+    <select id="breed-select" class="breed-select">
+      <option value="" disabled selected>Choose a cat breed</option>
+    </select>
+    <p class="loader hidden">Loading...</p>
+    <div class="cat-info hidden">
+      <img src="https://via.placeholder.com/300" alt="Cat Image" class="cat-image">
+      <div class="cat-details">
+        <h2 class="cat-name"></h2>
+        <p class="cat-description"></p>
+        <p class="cat-temperament"></p>
+      </div>
+    </div>
+    <p class="error hidden">Failed to load data. Please try again later.</p>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/slim-select@1.27.0/dist/slimselect.min.js"></script>
+  <script src="./index.js" type="module"></script>
+</body>
 </html>

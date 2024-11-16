@@ -1,67 +1,53 @@
-import { fetchBreeds, fetchCatByBreed } from './cat-api';
+import { fetchBreeds, fetchCatByBreed } from "./cat-api.js";
+import SlimSelect from 'slim-select';
+import 'slim-select/dist/slimselect.css';
+import Notiflix from 'notiflix';
 
-document.addEventListener('DOMContentLoaded', () => {
-  const breedSelect = document.getElementById('breed-select');
-  const loader = document.querySelector('.loader');
-  const error = document.querySelector('.error');
-  const catInfo = document.querySelector('.cat-info');
+const breedSelect = document.querySelector("#breed-select");
+const loader = document.querySelector(".loader");
+const catInfo = document.querySelector(".cat-info");
+const error = document.querySelector(".error");
 
-  function showLoader() {
-    loader.style.display = 'block';
-  }
+function showLoader(show) {
+  loader.classList.toggle("hidden", !show);
+}
 
-  function hideLoader() {
-    loader.style.display = 'none';
-  }
+function showError(show) {
+  error.classList.toggle("hidden", !show);
+}
 
-  function showError() {
-    error.style.display = 'block';
-  }
-
-  function hideError() {
-    error.style.display = 'none';
-  }
-
-  function populateBreeds(breeds) {
-    breedSelect.innerHTML = breeds.map(breed => `<option value="${breed.id}">${breed.name}</option>`).join('');
-  }
-
-  function displayCatInfo(cat) {
-    catInfo.innerHTML = `
-      <img src="${cat.url}" alt="${cat.breeds[0].name}" />
-      <h2>${cat.breeds[0].name}</h2>
-      <p>${cat.breeds[0].description}</p>
-      <p><strong>Temperament:</strong> ${cat.breeds[0].temperament}</p>
-    `;
-  }
-
-  breedSelect.addEventListener('change', () => {
-    const breedId = breedSelect.value;
-    if (!breedId) return;
-
-    showLoader();
-    hideError();
-    catInfo.innerHTML = '';
-
-    fetchCatByBreed(breedId)
-      .then(cat => {
-        displayCatInfo(cat);
-        hideLoader();
-      })
-      .catch(() => {
-        showError();
-        hideLoader();
-      });
-  });
-
-  showLoader();
+function populateBreeds() {
+  showLoader(true);
   fetchBreeds()
     .then(breeds => {
-      populateBreeds(breeds);
-      hideLoader();
+      breedSelect.innerHTML += breeds.map(
+        breed => `<option value="${breed.id}">${breed.name}</option>`
+      ).join("");
+      new SlimSelect({ select: "#breed-select" });
     })
-    .catch(() => {
-      showError();
-      hideLoader();
-    });
+    .catch(() => showError(true))
+    .finally(() => showLoader(false));
+}
+
+function showCatDetails(breedId) {
+  showLoader(true);
+  catInfo.classList.add("hidden");
+  fetchCatByBreed(breedId)
+    .then(cat => {
+      document.querySelector(".cat-image").src = cat.url;
+      document.querySelector(".cat-name").textContent = cat.breeds[0].name;
+      document.querySelector(".cat-description").textContent = cat.breeds[0].description;
+      document.querySelector(".cat-temperament").textContent = `Temperament: ${cat.breeds[0].temperament}`;
+      catInfo.classList.remove("hidden");
+    })
+    .catch(() => showError(true))
+    .finally(() => showLoader(false));
+}
+
+breedSelect.addEventListener("change", event => {
+  const breedId = event.target.value;
+  if (breedId) showCatDetails(breedId);
 });
+
+// Initialize
+populateBreeds();
